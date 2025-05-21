@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Persona Infographic: Vegan Burger Brothers & Doner Dudes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-text-dark: #2d2d2b;
+            --color-text-medium: #5a5a5a; 
+            --color-text-light: #fdfcfb; 
+            --color-background-main: #fdfcfb; 
+            --color-background-card: #ffffff;
+            --color-primary-accent: #95806c; 
+            --color-secondary-accent: #f4cf91; 
+            --color-border-muted: #dfd9d3; 
+            --color-highlight-bg: #fff9eb; 
+            --color-dark-bg-accent: #2d2d2b; 
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-background-main);
+            color: var(--color-text-dark);
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 550px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 280px; 
+            max-height: 350px;
+        }
+         .chart-container-sm { 
+            height: 180px;
+            max-height: 220px;
+        }
+
+        @media (min-width: 768px) { 
+            .chart-container {
+                height: 320px;
+            }
+            .chart-container-sm {
+                height: 200px;
+            }
+        }
+        @media (min-width: 1024px) { 
+            .chart-container {
+                height: 350px;
+            }
+             .chart-container-sm {
+                height: 220px;
+            }
+        }
+
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background-color: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+            color: var(--color-primary-accent);
+            font-weight: 500;
+        }
+        .nav-link:hover {
+            color: var(--color-text-dark);
+        }
+        .stat-card {
+            background-color: var(--color-background-card);
+            border-radius: 0.5rem; 
+            box-shadow: 0 4px 6px -1px rgba(45, 45, 43, 0.1), 0 2px 4px -1px rgba(45, 45, 43, 0.06); 
+            padding: 1.5rem; 
+            margin-bottom: 1.5rem; 
+            border-left: 5px solid var(--color-primary-accent);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .persona-card {
+            border-left: 5px solid var(--color-secondary-accent);
+        }
+        .persona-image-container {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 1rem auto;
+            background-color: var(--color-border-muted);
+        }
+        .persona-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1, h2, h3 {
+            color: var(--color-text-dark);
+            font-weight: 600;
+        }
+        h1 { font-size: 2.25rem; md:font-size: 2.75rem; }
+        h2 { font-size: 1.875rem; md:font-size: 2.25rem; border-bottom: 2px solid var(--color-primary-accent); padding-bottom: 0.25em; margin-bottom: 1.5rem;}
+        h3 { font-size: 1.25rem; md:font-size: 1.5rem; color: var(--color-primary-accent); }
+        
+        .header-section {
+            background-color: var(--color-dark-bg-accent);
+            color: var(--color-text-light);
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+            background-size: cover;
+            background-position: center;
+        }
+        .header-section h1, .header-section p {
+            color: var(--color-text-light);
+        }
+        .header-logo {
+            max-height: 60px;
+            margin-bottom: 1rem;
+        }
+
+        .gemini-button {
+            background-color: var(--color-primary-accent);
+            color: var(--color-text-light);
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem; 
+            font-weight: 500; 
+            transition: background-color 0.3s ease;
+            margin-top: 0.5rem;
+            margin-right: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+        .gemini-button:hover {
+            background-color: #7a6956; 
+        }
+        .gemini-output {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: var(--color-highlight-bg);
+            border-radius: 0.375rem; 
+            border: 1px solid var(--color-secondary-accent);
+            font-size: 0.875rem; 
+            color: var(--color-text-dark);
+            white-space: pre-wrap; 
+            min-height: 50px; 
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 1.25rem; 
+            height: 1.25rem; 
+            border: 2px solid var(--color-secondary-accent); 
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 0.5rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .report-image-inline {
+            max-height: 24px; 
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 0.25rem;
+        }
+        .brand-sticker {
+            max-height: 80px;
+            margin: 0.5rem;
+        }
+        .footer-logo {
+            max-height: 40px;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="header-section text-center" style="background-image: linear-gradient(rgba(45, 45, 43, 0.7), rgba(45, 45, 43, 0.7)), url('https://placehold.co/1200x400/2d2d2b/FFFFFF?text=Hero+Image+Placeholder');">
+        <div class="container mx-auto px-6">
+            <img src="https://placehold.co/180x60/FFFFFF/FFFFFF?text=Bright+Kitchen" alt="Bright Kitchen Logo" class="header-logo mx-auto">
+            <h1 class="text-3xl md:text-4xl font-bold mb-3">Understanding Your Customers</h1>
+            <p class="text-lg md:text-xl opacity-90">A Visual Deep Dive into <span class="font-semibold" style="color: var(--color-secondary-accent);">Vegan Burger Brothers</span> & <span class="font-semibold" style="color: var(--color-secondary-accent);">Doner Dudes</span> Patronage</p>
+            <p class="mt-2 text-sm opacity-80">Enhanced with ✨ AI-Powered Insights</p>
+        </div>
+    </header>
+
+    <nav class="sticky-nav shadow-md">
+        <div class="container mx-auto px-6 py-3 flex flex-wrap justify-center space-x-4 md:space-x-6">
+            <a href="#overview" class="nav-link">Overview</a>
+            <a href="#general-datapoints" class="nav-link">General Stats</a>
+            <a href="#personas" class="nav-link">Personas</a>
+            <a href="#comparative-insights" class="nav-link">Comparative Insights</a>
+            <a href="#takeaways" class="nav-link">Takeaways</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-6">
+
+        <section id="overview" class="my-12">
+            <h2 class="text-center">Overall Customer Landscape</h2>
+            <p class="text-center text-gray-700 mb-10 max-w-2xl mx-auto" style="color: var(--color-text-medium);">
+                Before diving into specific personas, let's look at the broader picture of your customer base. The data reveals a professionally oriented and educated audience with diverse ordering habits.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                <div class="stat-card">
+                    <div>
+                        <h3 class="mb-4">Key Aggregate Characteristics</h3>
+                        <ul class="list-disc list-inside space-y-2" style="color: var(--color-text-medium);">
+                            <li><strong style="color: var(--color-text-dark);">Primary Ordering Time:</strong> Dinner</li>
+                            <li><strong style="color: var(--color-text-dark);">Average Coupon Use:</strong> Generally Low</li>
+                            <li><strong style="color: var(--color-text-dark);">Common Interests:</strong> Health, Eco-awareness, Foodie (varies by segment)</li>
+                        </ul>
+                    </div>
+                    <p class="mt-4 text-xs" style="color: var(--color-text-medium);">Aggregated observations. Precise distributions require full dataset processing.</p>
+                </div>
+                <div class="stat-card">
+                     <div>
+                        <h3 class="mb-4 text-center">Overall Restaurant Mix</h3>
+                        <p class="text-center text-sm mb-4" style="color: var(--color-text-medium);">Customer order distribution (illustrative).</p>
+                        <div class="chart-container h-64 md:h-80">
+                            <canvas id="overallRestaurantMixChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="general-datapoints" class="my-16">
+            <h2 class="text-center">A Snapshot of Our Customers</h2>
+            <p class="text-center text-gray-700 mb-10 max-w-3xl mx-auto" style="color: var(--color-text-medium);">
+                General overview of the demographic and professional makeup of our valued customers.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
+                <div class="stat-card">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">Gender Distribution</h3>
+                        <div class="chart-container h-72">
+                            <canvas id="genderDistributionChart"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center" style="color: var(--color-text-medium);">Illustrative, photo-based estimation.</p>
+                </div>
+                 <div class="stat-card">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">Age Group Distribution</h3>
+                        <div class="chart-container h-72">
+                            <canvas id="ageGroupDistributionChart"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center" style="color: var(--color-text-medium);">Illustrative, based on `age_category`.</p>
+                </div>
+                <div class="stat-card">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">Top Profession Groups</h3>
+                        <div class="chart-container h-72">
+                            <canvas id="professionGroupsChart"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center" style="color: var(--color-text-medium);">Illustrative distribution.</p>
+                </div>
+                <div class="stat-card">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">Highest Education Levels</h3>
+                        <div class="chart-container h-72">
+                            <canvas id="educationLevelsChart"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center" style="color: var(--color-text-medium);">Illustrative distribution.</p>
+                </div>
+                <div class="stat-card lg:col-span-2"> <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">Top Industries (Raw)</h3>
+                        <div class="chart-container h-72">
+                            <canvas id="topIndustriesChart"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center" style="color: var(--color-text-medium);">Illustrative, based on `industry_raw`.</p>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="personas" class="my-16">
+            <h2 class="text-center">Meet Your Customer Personas</h2>
+            <p class="text-center text-gray-700 mb-10 max-w-3xl mx-auto" style="color: var(--color-text-medium);">
+                Three distinct customer personas. Click buttons for AI-powered marketing slogans and menu suggestions!
+            </p>
+            <img src="https://placehold.co/800x300/dfd9d3/2d2d2b?text=Delicious+Vegan+Options" alt="Vegan Burger Feature" class="report-image rounded-lg mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+
+                <div class="persona-card stat-card">
+                    <div>
+                        <div class="persona-image-container">
+                            <img src="https://placehold.co/80x80/95806c/FFFFFF?text=👩‍💼" alt="Chloe Persona Icon">
+                        </div>
+                        <h3 class="text-2xl font-bold mt-2 text-center">Chloe, "Conscious Professional"</h3>
+                        <p class="text-sm text-center italic mb-3" style="color: var(--color-text-medium);">Values-driven, seeks quality & sustainability.</p>
+                        <p class="text-xs text-gray-600 mb-1"><strong style="color: var(--color-text-dark);">Group Size:</strong> Est. 25-35%</p>
+                        <p class="text-xs text-gray-600 mb-3"><strong style="color: var(--color-text-dark);">Relevance:</strong> High loyalty potential, quality focus.</p>
+                        
+                        <h4 class="font-semibold mt-4 mb-1 text-sm" style="color: var(--color-primary-accent);">Key Demographics:</h4>
+                        <ul class="list-disc list-inside text-xs space-y-1" style="color: var(--color-text-medium);">
+                            <li>Age: 25-45 years</li>
+                            <li>Education: Master's/HBO</li>
+                            <li>Interests: Health, Eco-Awareness</li>
+                        </ul>
+                        <h4 class="font-semibold mt-3 mb-1 text-sm" style="color: var(--color-primary-accent);">Ordering Habits:</h4>
+                        <ul class="list-disc list-inside text-xs space-y-1" style="color: var(--color-text-medium);">
+                            <li>Favors: Vegan Burger Brothers</li>
+                            <li>AOV: Solid to High (€25-€40+)</li>
+                        </ul>
+                        <div class="mt-3">
+                            <p class="text-xs font-semibold text-center mb-1" style="color: var(--color-primary-accent);">Restaurant Mix (Chloe)</p>
+                            <div class="chart-container chart-container-sm">
+                                 <canvas id="chloeRestaurantMixChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button id="slogansChloeBtn" class="gemini-button text-xs">✨ Generate Slogans</button>
+                        <button id="menuChloeBtn" class="gemini-button text-xs">✨ Suggest Menu</button>
+                        <div id="slogansChloeOutput" class="gemini-output hidden"></div>
+                        <div id="menuChloeOutput" class="gemini-output hidden"></div>
+                    </div>
+                </div>
+
+                <div class="persona-card stat-card">
+                    <div>
+                        <div class="persona-image-container">
+                             <img src="https://placehold.co/80x80/95806c/FFFFFF?text=👨‍💻" alt="Alex Persona Icon">
+                        </div>
+                        <h3 class="text-2xl font-bold mt-2 text-center">Alex, "Pragmatic Achiever"</h3>
+                        <p class="text-sm text-center italic mb-3" style="color: var(--color-text-medium);">Efficient, seeks quality & convenience.</p>
+                        <p class="text-xs text-gray-600 mb-1"><strong style="color: var(--color-text-dark);">Group Size:</strong> Est. 30-40%</p>
+                        <p class="text-xs text-gray-600 mb-3"><strong style="color: var(--color-text-dark);">Relevance:</strong> High LTV, frequent/high value orders.</p>
+                        
+                        <h4 class="font-semibold mt-4 mb-1 text-sm" style="color: var(--color-primary-accent);">Key Demographics:</h4>
+                        <ul class="list-disc list-inside text-xs space-y-1" style="color: var(--color-text-medium);">
+                            <li>Age: 30-55+ years</li>
+                            <li>Roles: Executive, Manager</li>
+                        </ul>
+                        <h4 class="font-semibold mt-3 mb-1 text-sm" style="color: var(--color-primary-accent);">Ordering Habits:</h4>
+                        <ul class="list-disc list-inside text-xs space-y-1" style="color: var(--color-text-medium);">
+                            <li>Orders from: Both VBB & DD</li>
+                            <li>OPM/AOV: High potential</li>
+                        </ul>
+                        <div class="mt-3">
+                            <p class="text-xs font-semibold text-center mb-1" style="color: var(--color-primary-accent);">Restaurant Mix (Alex)</p>
+                            <div class="chart-container chart-container-sm">
+                                 <canvas id="alexRestaurantMixChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="mt-4">
+                        <button id="slogansAlexBtn" class="gemini-button text-xs">✨ Generate Slogans</button>
+                        <button id="menuAlexBtn" class="gemini-button text-xs">✨ Suggest Menu</button>
+                        <div id="slogansAlexOutput" class="gemini-output hidden"></div>
+                        <div id="menuAlexOutput" class="gemini-output hidden"></div>
+                    </div>
+                </div>
+
+                <div class="persona-card stat-card">
+                    <div>
+                        <div class="persona-image-container">
+                             <img src="https://placehold.co/80x80/95806c/FFFFFF?text=🧑‍🎓" alt="Sam Persona Icon">
+                        </div>
+                        <h3 class="text-2xl font-bold mt-2 text-center">Sam, "Casual Explorer"</h3>
+                        <p class="text-sm text-center italic mb-3" style="color: var(--color-text-medium);">Curious, enjoys variety & value.</p>
+                        <p class="text-xs text-gray-600 mb-1"><strong style="color: var(--color-text-dark);">Group Size:</strong> Est. 20-30%</p>
+                        <p class="text-xs text-gray-600 mb-3"><strong style="color: var(--color-text-dark);">Relevance:</strong> Growth segment, open to trial.</p>
+                        
+                        <h4 class="font-semibold mt-4 mb-1 text-sm" style="color: var(--color-primary-accent);">Key Demographics:</h4>
+                        <ul class="list-disc list-inside text-xs space-y-1" style="color: var(--color-text-medium);">
+                            <li>Age: 20-35 years</li>
+                            <li>Roles: Student or IC</li>
+                        </ul>
+                        <h4 class="font-semibold mt-3 mb-1 text-sm" style="color: var(--color-primary-accent);">Ordering Habits:</h4>
+                        <ul class="list-disc list-inside text-xs space-y-1" style="color: var(--color-text-medium);">
+                            <li>Orders from: Both VBB & DD</li>
+                            <li>AOV: Lower to Moderate</li>
+                            <li>Discount Sensitivity: Higher</li>
+                        </ul>
+                        <div class="mt-3">
+                            <p class="text-xs font-semibold text-center mb-1" style="color: var(--color-primary-accent);">Restaurant Mix (Sam)</p>
+                            <div class="chart-container chart-container-sm">
+                                 <canvas id="samRestaurantMixChart"></canvas>
+                            </div>
+                        </div>
+                         <div class="text-center mt-3">
+                            <img src="https://placehold.co/100x60/dfd9d3/2d2d2b?text=Crispy" alt="Crispy Chicken Sticker" class="brand-sticker inline-block">
+                            <img src="https://placehold.co/100x60/dfd9d3/2d2d2b?text=Royal" alt="Royal Burger Sticker" class="brand-sticker inline-block">
+                            </div>
+                    </div>
+                     <div class="mt-4">
+                        <button id="slogansSamBtn" class="gemini-button text-xs">✨ Generate Slogans</button>
+                        <button id="menuSamBtn" class="gemini-button text-xs">✨ Suggest Menu</button>
+                        <div id="slogansSamOutput" class="gemini-output hidden"></div>
+                        <div id="menuSamOutput" class="gemini-output hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparative-insights" class="my-16">
+            <h2 class="text-center">Comparative Persona Insights</h2>
+            <p class="text-center text-gray-700 mb-10 max-w-3xl mx-auto" style="color: var(--color-text-medium);">
+                Comparing personas reveals distinct patterns in their ordering behaviors and preferences.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                <div class="stat-card">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">Avg. Orders Per Month (OPM)</h3>
+                        <div class="chart-container h-80">
+                            <canvas id="opmByPersonaChart"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center" style="color: var(--color-text-medium);">Illustrative values.</p>
+                </div>
+                <div class="stat-card">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">Avg. Order Value (AOV)</h3>
+                        <div class="chart-container h-80">
+                            <canvas id="aovByPersonaChart"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center" style="color: var(--color-text-medium);">Illustrative values.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 mt-8 gap-8">
+                 <div class="stat-card">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">Preferred Ordering Times by Persona</h3>
+                        <div class="chart-container h-96">
+                            <canvas id="orderingTimesByPersonaChart"></canvas>
+                        </div>
+                    </div>
+                     <p class="text-xs text-gray-500 mt-2 text-center" style="color: var(--color-text-medium);">Illustrative distribution.</p>
+                </div>
+            </div>
+             <div class="grid grid-cols-1 mt-8 gap-8">
+                <div class="stat-card">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-center">Restaurant Mix Distribution by Persona</h3>
+                         <div class="chart-container h-96">
+                            <canvas id="restaurantMixByPersonaChart"></canvas>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 text-center" style="color: var(--color-text-medium);">Illustrative distribution.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="takeaways" class="my-12 py-12" style="background-color: var(--color-highlight-bg);">
+            <div class="container mx-auto px-6">
+                <h2 class="text-center">Strategic Takeaways 
+                    <img src="https://placehold.co/24x24/95806c/FFFFFF?text=✈️" alt="Action Icon" class="report-image-inline">
+                    </h2>
+                <p class="text-center mb-6 max-w-3xl mx-auto" style="color: var(--color-text-medium);">
+                    Understanding these personas provides a roadmap for VBB & DD. Utilize AI tools for targeted approaches!
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="p-6 bg-white rounded-lg shadow-lg">
+                        <h3 class="text-lg font-semibold mb-2">Targeted Marketing</h3>
+                        <p class="text-sm" style="color: var(--color-text-medium);">Tailor messages to persona motivations.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-lg shadow-lg">
+                        <h3 class="text-lg font-semibold mb-2">Optimized Offerings</h3>
+                        <p class="text-sm" style="color: var(--color-text-medium);">Refine menus based on persona needs.</p>
+                    </div>
+                    <div class="p-6 bg-white rounded-lg shadow-lg">
+                        <h3 class="text-lg font-semibold mb-2">Enhanced Loyalty
+                             <img src="https://placehold.co/20x20/95806c/FFFFFF?text=❤️" alt="Loyalty Icon" class="report-image-inline">
+                            </h3>
+                        <p class="text-sm" style="color: var(--color-text-medium);">Reward specific persona behaviors.</p>
+                    </div>
+                </div>
+                 <p class="text-center mt-8" style="color: var(--color-text-medium);">
+                    Acting on these insights can foster stronger customer relationships and drive sustainable growth.
+                     <img src="https://placehold.co/20x20/95806c/FFFFFF?text=?️" alt="Question Icon" class="report-image-inline">
+                     </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center py-8" style="background-color: var(--color-dark-bg-accent); color: var(--color-border-muted);">
+        <p class="text-sm">&copy; 2025 Customer Insights Co. All Rights Reserved.</p>
+        <p class="text-xs opacity-80">Infographic for Vegan Burger Brothers & Doner Dudes. AI features powered by Gemini.</p>
+        <img src="https://placehold.co/120x40/FFFFFF/FFFFFF?text=Bright+Kitchen" alt="Bright Kitchen Logo" class="footer-logo mx-auto mt-2">
+        </footer>
+
+    <script>
+        // Palette Colors
+        const colorTextDark = getComputedStyle(document.documentElement).getPropertyValue('--color-text-dark').trim();
+        const colorPrimaryAccent = getComputedStyle(document.documentElement).getPropertyValue('--color-primary-accent').trim();
+        const colorSecondaryAccent = getComputedStyle(document.documentElement).getPropertyValue('--color-secondary-accent').trim();
+        const colorBorderMuted = getComputedStyle(document.documentElement).getPropertyValue('--color-border-muted').trim();
+        
+        const chartColors = [
+            colorPrimaryAccent,    // #95806c
+            colorSecondaryAccent,  // #f4cf91
+            '#a89c90',             // Lighter Brownish-gray
+            '#e0b97f',             // Darker Pale yellow/beige
+            '#7a6956',             // Darker Brownish-gray
+            '#c9beb4',             // Muted color from palette
+            '#bfae9d',             // Mix
+            '#f8e0b0'              // Lighter secondary
+        ];
+
+        const colorChartDonut1 = chartColors[0];
+        const colorChartDonut2 = chartColors[1];
+        const colorChartDonut3 = chartColors[5];
+
+
+        function wrapLabels(label, maxWidth = 16) { 
+            if (typeof label !== 'string' || label.length <= maxWidth) { return label; }
+            const words = label.split(' ');
+            let currentLine = '';
+            const lines = [];
+            for (const word of words) {
+                if ((currentLine + word).length > maxWidth && currentLine.length > 0) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            }
+            if (currentLine.length > 0) { lines.push(currentLine.trim()); }
+            return lines.length > 0 ? lines : [label]; 
+        }
+        
+        const commonTooltipCallbacks = {
+            title: function(tooltipItems) {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) { return label.join(' '); }
+                return label;
+            }
+        };
+
+        const getDefaultChartOptions = () => ({ // Function to get fresh options object
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    position: 'bottom', 
+                    labels: { color: colorTextDark, font: { size: 10 } } 
+                },
+                tooltip: { 
+                    callbacks: commonTooltipCallbacks,
+                    bodyFont: { size: 10 },
+                    titleFont: { size: 12 }
+                }
+            },
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    ticks: { color: colorTextDark, font: {size: 10} }, 
+                    grid: { color: colorBorderMuted } 
+                },
+                x: { 
+                    ticks: { color: colorTextDark, font: {size: 10} }, 
+                    grid: { display: false } 
+                }
+            }
+        });
+
+        // Chart 1: Overall Restaurant Mix
+        const overallRestaurantMixCtx = document.getElementById('overallRestaurantMixChart').getContext('2d');
+        new Chart(overallRestaurantMixCtx, {
+            type: 'doughnut',
+            data: { labels: ['VBB Only', 'DD Only', 'VBB & DD'], datasets: [{ label: 'Restaurant Mix', data: [45, 15, 40], backgroundColor: [colorChartDonut1, colorChartDonut2, colorChartDonut3], borderColor: 'var(--color-background-card)', borderWidth: 2 }] },
+            options: { ...getDefaultChartOptions(), plugins: {...getDefaultChartOptions().plugins, legend: {...getDefaultChartOptions().plugins.legend, position: 'right'} } }
+        });
+        // Gender Distribution Chart
+        const genderDistributionCtx = document.getElementById('genderDistributionChart').getContext('2d');
+        new Chart(genderDistributionCtx, {
+            type: 'doughnut',
+            data: { labels: ['Female', 'Male', 'Unknown/Other'], datasets: [{ label: 'Gender Distribution', data: [48, 42, 10], backgroundColor: [colorChartDonut1, colorChartDonut2, colorBorderMuted], borderColor: 'var(--color-background-card)', borderWidth: 2 }] },
+            options: getDefaultChartOptions()
+        });
+
+        // Age Group Distribution Chart
+        const ageGroupDistributionCtx = document.getElementById('ageGroupDistributionChart').getContext('2d');
+        const ageGroupOptions = getDefaultChartOptions();
+        ageGroupOptions.plugins.legend.display = false; // No legend for single dataset bar
+        new Chart(ageGroupDistributionCtx, {
+            type: 'bar',
+            data: { 
+                labels: ['<20', '20-24', '25-29', '30-35', '36-40', '41-45', '46-55', '55+'], 
+                datasets: [{ 
+                    label: 'Age Group Distribution', 
+                    data: [5, 15, 25, 25, 15, 10, 3, 2], 
+                    backgroundColor: chartColors.slice(0,8) 
+                }] 
+            },
+            options: ageGroupOptions
+        });
+
+        // Top Profession Groups Chart
+        const professionGroupsCtx = document.getElementById('professionGroupsChart').getContext('2d');
+        const professionGroupOptions = getDefaultChartOptions();
+        professionGroupOptions.indexAxis = 'y';
+        professionGroupOptions.plugins.legend.display = false;
+        new Chart(professionGroupsCtx, {
+            type: 'bar',
+            data: { 
+                labels: [wrapLabels('Technical / R&D'), wrapLabels('Executive'), wrapLabels('Education & Training'), wrapLabels('Other Prof. Groups')], 
+                datasets: [{ 
+                    label: 'Profession Group Distribution', 
+                    data: [30, 25, 20, 25], 
+                    backgroundColor: chartColors.slice(0,4) 
+                }] 
+            },
+            options: professionGroupOptions
+        });
+        // Highest Education Levels Chart
+        const educationLevelsCtx = document.getElementById('educationLevelsChart').getContext('2d');
+        const educationOptions = getDefaultChartOptions();
+        educationOptions.plugins.legend.display = false;
+        new Chart(educationLevelsCtx, {
+            type: 'bar',
+            data: { 
+                labels: ['Master', 'HBO', 'PhD', 'Other Edu.'], 
+                datasets: [{ 
+                    label: 'Education Level Distribution', 
+                    data: [40, 35, 10, 15], 
+                    backgroundColor: chartColors.slice(0,4) 
+                }] 
+            },
+            options: educationOptions
+        });
+
+        // Top Industries Chart
+        const topIndustriesCtx = document.getElementById('topIndustriesChart').getContext('2d');
+        const industriesOptions = getDefaultChartOptions();
+        industriesOptions.indexAxis = 'y';
+        industriesOptions.plugins.legend.display = false;
+        new Chart(topIndustriesCtx, {
+            type: 'bar',
+            data: { 
+                labels: [wrapLabels('Higher Education'), wrapLabels('Technology, Info & Internet'), wrapLabels('Software, IT & Telecom'), wrapLabels('Manufacturing/Eng.'), wrapLabels('Other Industries')], 
+                datasets: [{ 
+                    label: 'Top Industry Distribution', 
+                    data: [25, 20, 18, 15, 22], 
+                    backgroundColor: chartColors.slice(0,5) 
+                }] 
+            },
+            options: industriesOptions
+        });
+
+        // Persona Mix Charts
+        const personaMixConfig = (canvasId, data) => {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            const options = getDefaultChartOptions();
+            options.plugins.legend.display = false;
+            return new Chart(ctx, { type: 'doughnut', data: { labels: ['VBB Only', 'DD Only', 'VBB & DD'], datasets: [{ data: data, backgroundColor: [colorChartDonut1, colorChartDonut2, colorChartDonut3], borderColor: 'var(--color-background-card)', borderWidth: 1 }] }, options: options });
+        };
+        personaMixConfig('chloeRestaurantMixChart', [60, 5, 35]); 
+        personaMixConfig('alexRestaurantMixChart', [30, 30, 40]);   
+        personaMixConfig('samRestaurantMixChart', [20, 20, 60]);     
+        
+        // Comparative Charts
+        const opmByPersonaCtx = document.getElementById('opmByPersonaChart').getContext('2d');
+        const opmOptions = getDefaultChartOptions();
+        opmOptions.plugins.legend.display = false;
+        new Chart(opmByPersonaCtx, { type: 'bar', data: { labels: [wrapLabels('Chloe'), wrapLabels('Alex'), wrapLabels('Sam')], datasets: [{ label: 'Avg. Orders Per Month', data: [1.1, 3.0, 1.15], backgroundColor: chartColors.slice(0,3) }] }, options: opmOptions });
+        
+        const aovByPersonaCtx = document.getElementById('aovByPersonaChart').getContext('2d');
+        const aovOptions = getDefaultChartOptions();
+        aovOptions.plugins.legend.display = false;
+        new Chart(aovByPersonaCtx, { type: 'bar', data: { labels: [wrapLabels('Chloe'), wrapLabels('Alex'), wrapLabels('Sam')], datasets: [{ label: 'Avg. Order Value (€)', data: [32.5, 50, 27.5], backgroundColor: chartColors.slice(0,3) }] }, options: aovOptions });
+        
+        const orderingTimesCtx = document.getElementById('orderingTimesByPersonaChart').getContext('2d');
+        const orderingTimesOptions = getDefaultChartOptions();
+        orderingTimesOptions.scales.x.stacked = true;
+        orderingTimesOptions.scales.y.stacked = true;
+        orderingTimesOptions.scales.y.title = { display: true, text: '% of Orders', color: colorTextDark};
+        new Chart(orderingTimesCtx, { type: 'bar', data: { labels: [wrapLabels('Chloe'), wrapLabels('Alex'), wrapLabels('Sam')], datasets: [ { label: 'Lunch %', data: [5, 5, 30], backgroundColor: chartColors[0] }, { label: 'Afternoon %', data: [30, 20, 25], backgroundColor: chartColors[1] }, { label: 'Dinner %', data: [60, 50, 25], backgroundColor: chartColors[2] }, { label: 'Night %', data: [5, 25, 20], backgroundColor: chartColors[3] } ] }, 
+            options: orderingTimesOptions });
+        
+        const restaurantMixByPersonaCtx = document.getElementById('restaurantMixByPersonaChart').getContext('2d');
+        const restaurantMixOptions = getDefaultChartOptions();
+        restaurantMixOptions.scales.y.title = { display: true, text: '% of Persona', color: colorTextDark};
+        new Chart(restaurantMixByPersonaCtx, { type: 'bar', data: { labels: [wrapLabels('Chloe'), wrapLabels('Alex'), wrapLabels('Sam')], datasets: [ { label: 'VBB Only %', data: [60, 30, 20], backgroundColor: chartColors[0] }, { label: 'DD Only %', data: [5, 30, 20], backgroundColor: chartColors[1] }, { label: 'VBB & DD %', data: [35, 40, 60], backgroundColor: chartColors[2] } ] }, 
+            options: restaurantMixOptions });
+
+        // Gemini API Integration
+        const API_KEY = ""; 
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
+        async function callGeminiAPI(prompt, buttonElement, outputElementId) {
+            const outputElement = document.getElementById(outputElementId);
+            const originalButtonText = buttonElement.innerHTML;
+            buttonElement.innerHTML = 'Generating... <div class="loading-spinner" style="border-color: var(--color-secondary-accent); border-top-color: transparent;"></div>';
+            buttonElement.disabled = true;
+            outputElement.classList.remove('hidden');
+            outputElement.textContent = 'Fetching insights...';
+
+            try {
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) { const errorData = await response.json(); console.error("Gemini API Error:", errorData); throw new Error(`API request failed: ${errorData.error?.message || response.status}`); }
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts && result.candidates[0].content.parts.length > 0) {
+                    outputElement.textContent = result.candidates[0].content.parts[0].text.trim();
+                } else { console.error("Unexpected API response:", result); outputElement.textContent = 'Could not retrieve insights.'; }
+            } catch (error) { console.error('Error calling Gemini API:', error); outputElement.textContent = `Error: ${error.message}. Check console.`;
+            } finally { buttonElement.innerHTML = originalButtonText; buttonElement.disabled = false; }
+        }
+
+        const personasData = {
+            chloe: { name: "Chloe, the Conscious Professional", description: "Chloe is 25-45, educated (Master's/HBO), in Tech/Consulting/Healthcare. Values health, sustainability, quality. Prefers Vegan Burger Brothers (VBB). AOV €25-€40+.", favors: "Vegan Burger Brothers" },
+            alex: { name: "Alex, the Pragmatic Achiever", description: "Alex is 30-55+, an Executive/Manager in Tech/Finance. Values efficiency, reliability, quality, convenience. Orders from VBB & DD. AOV €25-€60+.", favors: "both Vegan Burger Brothers and Doner Dudes" },
+            sam: { name: "Sam, the Casual Explorer", description: "Sam is 20-35, Student/IC. Values variety, convenience, value, trends. Orders from VBB & DD, open to new items. AOV €20-€35.", favors: "both Vegan Burger Brothers and Doner Dudes, and is open to new items" }
+        };
+        document.getElementById('slogansChloeBtn').addEventListener('click', function() { const p = personasData.chloe; const prompt = `Generate 3 short, catchy marketing slogans for a food service targeting '${p.name}'. Characteristics: ${p.description} Focus on values (health, sustainability, quality) & preference for ${p.favors}.`; callGeminiAPI(prompt, this, 'slogansChloeOutput'); });
+        document.getElementById('menuChloeBtn').addEventListener('click', function() { const p = personasData.chloe; const prompt = `Suggest 2-3 specific menu items from ${p.favors} for '${p.name}'. Profile: ${p.description} Explain why each suits her health/ethical preferences. Assume typical ${p.favors} menu.`; callGeminiAPI(prompt, this, 'menuChloeOutput'); });
+        document.getElementById('slogansAlexBtn').addEventListener('click', function() { const p = personasData.alex; const prompt = `Generate 3 short, catchy marketing slogans for a food service targeting '${p.name}'. Characteristics: ${p.description} Focus on values (efficiency, quality, convenience) & that he orders from ${p.favors}.`; callGeminiAPI(prompt, this, 'slogansAlexOutput'); });
+        document.getElementById('menuAlexBtn').addEventListener('click', function() { const p = personasData.alex; const prompt = `Suggest 2-3 specific menu items from ${p.favors} for '${p.name}'. Profile: ${p.description} Explain why each suits his pragmatic/quality preferences. Assume typical menus.`; callGeminiAPI(prompt, this, 'menuAlexOutput'); });
+        document.getElementById('slogansSamBtn').addEventListener('click', function() { const p = personasData.sam; const prompt = `Generate 3 short, catchy marketing slogans for a food service targeting '${p.name}'. Characteristics: ${p.description} Focus on values (variety, convenience, value, exploration) & that they order from ${p.favors}.`; callGeminiAPI(prompt, this, 'slogansSamOutput'); });
+        document.getElementById('menuSamBtn').addEventListener('click', function() { const p = personasData.sam; const prompt = `Suggest 2-3 specific menu items from ${p.favors} for '${p.name}'. Profile: ${p.description} Explain why each suits their exploratory/value preferences. Assume typical menus & highlight variety.`; callGeminiAPI(prompt, this, 'menuSamOutput'); });
+
+    </script>
+</body>
+</html>
